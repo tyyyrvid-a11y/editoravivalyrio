@@ -1,0 +1,38 @@
+[
+  {
+    "id": "qtd-laura-flex",
+    "title": "Meu Nome � Laura (Flex�vel)",
+    "price": 59.9,
+    "image": ""
+  },
+  {
+    "id": "qtd-laura-dura",
+    "title": "Meu Nome � Laura (Capa Dura)",
+    "price": 79.9,
+    "image": ""
+  },
+  {
+    "id": "qtd-vila-flex",
+    "title": "A Vila do Ser (Flex�vel)",
+    "price": 79.99,
+    "image": ""
+  },
+  {
+    "id": "qtd-vila-dura",
+    "title": "A Vila do Ser (Capa Dura)",
+    "price": 99.9,
+    "image": ""
+  },
+  {
+    "id": "qtd-lipe",
+    "title": "Lipe vai � Terapia",
+    "price": 25,
+    "image": ""
+  },
+  {
+    "id": "qtd-ararinha",
+    "title": "Para Sempre Ararinha (Capa Mole)",
+    "price": 59.99,
+    "image": ""
+  }
+]

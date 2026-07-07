@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Blog Viva Lyrio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F3ECE6;
+    --bg-alt:    #EBE2DA;
+    --green:     #2F3523;
+    --green-mid: #6B7A52;
+    --terra:     #C97B42;
+    --text:      #2F3523;
+    --muted:     #7A7A65;
+    --white:     #FFFFFF;
+    --danger:    #C0392B;
+    --success:   #27AE60;
+    --border:    rgba(47,53,35,0.12);
+    --shadow:    0 4px 24px rgba(47,53,35,0.08);
+    --radius:    14px;
+  }
+
+  html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #E8DDD0 0%, var(--bg) 70%);
+  }
+  .login-box {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 12px 48px rgba(47,53,35,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+    text-align: center;
+  }
+  .login-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .login-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 36px;
+  }
+  .login-field {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    margin-bottom: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .login-field:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(47,53,35,0.1);
+  }
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .login-btn:hover { background: #1e2c15; transform: translateY(-1px); }
+  .login-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
+  /* ── LAYOUT ── */
+  #app { display: none; min-height: 100vh; }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 240px;
+    background: var(--green);
+    color: var(--white);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .sidebar-logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--white);
+  }
+  .sidebar-logo-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 3px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    text-align: left;
+    width: 100%;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+  .nav-item.active { background: rgba(255,255,255,0.15); color: var(--white); }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    border-radius: 8px;
+    width: 100%;
+    transition: color 0.2s, background 0.2s;
+  }
+  .logout-btn:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+
+  .main {
+    margin-left: 240px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: rgba(243,236,230,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--text);
+  }
+  .topbar-actions { display: flex; gap: 10px; }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--green); color: var(--white); }
+  .btn-primary:hover { background: #1e2c15; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--text); }
+  .btn-danger { background: var(--danger); color: var(--white); }
+  .btn-danger:hover { background: #a93226; }
+  .btn-success { background: var(--success); color: var(--white); }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+
+  .content { padding: 32px; flex: 1; }
+
+  /* ── PAINEL ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    box-shadow: var(--shadow);
+  }
+  .stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .stat-valor { font-size: 32px; font-weight: 700; color: var(--green); font-family: 'Playfair Display', serif; }
+
+  /* ── LISTA POSTS ── */
+  .posts-table {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+    overflow: hidden;
+  }
+  .posts-table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 100px 120px;
+    padding: 12px 20px;
+    background: rgba(47,53,35,0.04);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    gap: 12px;
+  }
+  .post-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 100px 120px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .post-row:last-child { border-bottom: none; }
+  .post-row:hover { background: rgba(47,53,35,0.025); }
+  .post-titulo { font-weight: 600; font-size: 14px; line-height: 1.3; }
+  .post-titulo small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .post-cat { font-size: 12px; color: var(--muted); }
+  .post-autor { font-size: 12px; color: var(--muted); }
+  .post-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .status-pub { background: rgba(39,174,96,0.12); color: var(--success); }
+  .status-rascunho { background: rgba(47,53,35,0.08); color: var(--muted); }
+  .post-acoes { display: flex; gap: 6px; }
+
+  /* ── EDITOR ── */
+  .editor-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(47,53,35,0.5);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .editor-overlay.open { display: flex; }
+  .editor-box {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 760px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(47,53,35,0.2);
+    display: flex;
+    flex-direction: column;
+  }
+  .editor-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 1;
+    border-radius: 20px 20px 0 0;
+  }
+  .editor-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .editor-close {
+    width: 32px; height: 32px;
+    border: none;
+    background: var(--bg);
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .editor-close:hover { background: var(--bg-alt); }
+  .editor-body { padding: 28px; flex: 1; }
+  .editor-footer {
+    padding: 16px 28px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .field-group { margin-bottom: 20px; }
+  .field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+  .field-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(47,53,35,0.1);
+    background: var(--white);
+  }
+  .field-textarea {
+    min-height: 200px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+  }
+  .toggle-switch {
+    width: 40px; height: 22px;
+    background: var(--border);
+    border-radius: 100px;
+    position: relative;
+    transition: background 0.25s;
+    flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--green); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 16px; height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.25s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on::after { transform: translateX(18px); }
+  .toggle-label { font-size: 14px; font-weight: 500; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--green);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(47,53,35,0.25);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.erro { background: var(--danger); }
+
+  /* ── EMPTY ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* ── LOADING ── */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: var(--muted);
+    gap: 10px;
+    font-size: 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .section-hidden { display: none; }
+
+  /* Admin Mobile Optimization */
+  @media (max-width: 768px) {
+    .admin-layout { flex-direction: column !important; }
+    .sidebar { 
+      position: static !important; 
+      width: 100% !important; 
+      height: auto !important; 
+      padding: 20px !important; 
+      border-right: none !important; 
+      border-bottom: 1px solid rgba(0,0,0,0.05) !important; 
+    }
+    .main-content { 
+      margin-left: 0 !important; 
+      padding: 20px 16px !important; 
+    }
+    .dashboard-grid { 
+      grid-template-columns: 1fr !important; 
+      gap: 16px !important;
+    }
+    .admin-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 12px !important;
+    }
+    .table-container {
+      margin: 0 !important;
+      border-radius: 12px !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">✦ Viva Lyrio</div>
+    <p class="login-sub">Painel de Administração · Blog</p>
+    <input class="login-field" type="text" id="login-user" placeholder="Usuário" autocomplete="username">
+    <input class="login-field" type="password" id="login-pass" placeholder="Senha" autocomplete="current-password"
+      onkeypress="if(event.key==='Enter') fazerLogin()">
+    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+    <p class="login-error" id="login-error"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">Viva Lyrio</div>
+      <div class="sidebar-logo-sub">Admin · Blog</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="setView('dashboard')">
+        <span class="icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="setView('posts')">
+        <span class="icon">📝</span> Posts
+      </button>
+      <button class="nav-item" onclick="setView('novo')">
+        <span class="icon">✍️</span> Novo post
+      </button>
+          <button class="nav-item" onclick="setView('pedidos')">
+        <span class="icon">??</span> Pedidos
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="fazerLogout()">
+        <span>↩</span> Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="topbar">
+      <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="abrirEditor()">+ Novo post</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total de posts</div>
+            <div class="stat-valor" id="stat-total">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Publicados</div>
+            <div class="stat-valor" id="stat-pub" style="color: var(--success);">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Rascunhos</div>
+            <div class="stat-valor" id="stat-rascunho" style="color: var(--terra);">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Categorias</div>
+            <div class="stat-valor" id="stat-cats">—</div>
+          </div>
+        </div>
+        <div class="posts-table">
+          <div id="dash-recentes">
+            <div class="loading"><div class="spinner"></div> Carregando posts...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POSTS -->
+      <div id="view-posts" class="section-hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm filtro-status active" data-status="todos" onclick="filtrarStatus('todos',this)">Todos</button>
+            <button class="btn btn-secondary btn-sm filtro-status" data-status="publicado" onclick="filtrarStatus('publicado',this)">Publicados</button>
+            <button class="btn btn-secondary btn-sm filtro-status" data-status="rascunho" onclick="filtrarStatus('rascunho',this)">Rascunhos</button>
+          </div>
+          <input type="search" placeholder="🔍 Buscar..." id="busca-posts" oninput="renderPosts()"
+            style="padding:8px 14px;border:1.5px solid var(--border);border-radius:100px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:var(--bg);width:200px;">
+        </div>
+        <div class="posts-table" id="tabela-posts">
+          <div class="loading"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+
+            <!-- PEDIDOS -->
+      <div id="view-pedidos" class="section-hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <h2 style="font-size:20px;color:var(--text);margin:0;">Últimos Pedidos</h2>
+          <button class="btn btn-secondary btn-sm" onclick="carregarPedidos()">?? Atualizar</button>
+        </div>
+        <div class="posts-table">
+          <table style="width:100%;text-align:left;border-collapse:collapse;font-size:14px;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border);color:var(--muted);">
+                <th style="padding:12px 10px;">ID / Data</th>
+                <th style="padding:12px 10px;">Endereço de Entrega</th>
+                <th style="padding:12px 10px;">Resumo</th>
+                <th style="padding:12px 10px;">Total</th>
+                <th style="padding:12px 10px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-pedidos-body">
+              <tr><td colspan="5" style="padding:20px;text-align:center;"><div class="loading"><div class="spinner"></div> Carregando pedidos...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOVO (inline editor quando não usa modal) -->
+      <div id="view-novo" class="section-hidden">
+        <p style="color:var(--muted);font-size:14px;">Use o botão "+ Novo post" para abrir o editor.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR MODAL -->
+<div class="editor-overlay" id="editor-overlay">
+  <div class="editor-box">
+    <div class="editor-header">
+      <h2 id="editor-titulo-header">Novo post</h2>
+      <button class="editor-close" onclick="fecharEditor()">×</button>
+    </div>
+    <div class="editor-body">
+      <input type="hidden" id="editor-id">
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Emoji</label>
+          <input class="field-input" id="editor-emoji" placeholder="📚" maxlength="4" style="font-size:22px;text-align:center;width:80px;">
+        </div>
+        <div class="field-group" style="flex:1;">
+          <label class="field-label">Título *</label>
+          <input class="field-input" id="editor-titulo" placeholder="Título do post" oninput="gerarSlug()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Slug (URL)</label>
+        <input class="field-input" id="editor-slug" placeholder="titulo-do-post" style="font-family:monospace;font-size:13px;">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Resumo</label>
+        <textarea class="field-input field-textarea" id="editor-resumo" placeholder="Breve descrição do post (aparece na listagem do blog)" style="min-height:80px;"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Conteúdo</label>
+        <textarea class="field-input field-textarea" id="editor-conteudo" placeholder="Escreva o conteúdo completo aqui..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Autor</label>
+          <input class="field-input" id="editor-autor" placeholder="Nome do autor" value="Equipe Viva Lyrio">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Categoria</label>
+          <select class="field-input" id="editor-categoria">
+            <option>Literatura Infantil</option>
+            <option>Saúde Mental</option>
+            <option>Luto & Afeto</option>
+            <option>Educação</option>
+            <option>Família</option>
+            <option>Autoconhecimento</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-toggle" onclick="togglePublicado()">
+          <div class="toggle-switch" id="toggle-pub"></div>
+          <span class="toggle-label" id="toggle-pub-label">Salvar como rascunho</span>
+        </div>
+      </div>
+    </div>
+    <div class="editor-footer">
+      <button class="btn btn-secondary" onclick="fecharEditor()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarPost()" id="btn-salvar">💾 Salvar post</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+  const SUPABASE_URL = 'https://adacpnvxwvtmxcrgpucd.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkYWNwbnZ4d3Z0bXhjcmdwdWNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDA0NDgsImV4cCI6MjA5NzkxNjQ0OH0.rlTQtT_YO5OTfiDIuC2TYnN07rwZe_trZZtbGjQg1bU';
+
+  // ── AUTH (senha local simples) ──────────────────────────────────────────────
+  const ADMIN_USER = 'vivalyrio';
+  const ADMIN_PASS = 'viva@2025';
+
+  let isLogado = sessionStorage.getItem('vl_admin') === '1';
+  if (isLogado) mostrarApp();
+
+  function fazerLogin() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      sessionStorage.setItem('vl_admin', '1');
+      isLogado = true;
+      mostrarApp();
+    } else {
+      document.getElementById('login-error').textContent = 'Usuário ou senha incorretos.';
+    }
+  }
+
+  function fazerLogout() {
+    sessionStorage.removeItem('vl_admin');
+    location.reload();
+  }
+
+  function mostrarApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    carregarDados();
+  }
+
+  // ── SUPABASE API ────────────────────────────────────────────────────────────
+  async function sbFetch(path, method='GET', body=null) {
+    const opts = {
+      method,
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
+      }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(SUPABASE_URL + '/rest/v1' + path, opts);
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  }
+
+  // ── DADOS ───────────────────────────────────────────────────────────────────
+  let todosOsPosts = [];
+  let filtroAtual  = 'todos';
+
+  async function carregarDados() {
+    try {
+      todosOsPosts = await sbFetch('/posts?order=criado_em.desc&select=*') || [];
+      renderDashboard();
+      renderPosts();
+    } catch(e) {
+      toast('Erro ao carregar: ' + e.message, true);
+      // Tabela pode não existir ainda
+      document.getElementById('dash-recentes').innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🛠️</div>
+          <h3>Tabela não encontrada</h3>
+          <p>Execute o SQL de criação da tabela no Supabase primeiro.<br>
+          Acesse: Supabase → SQL Editor → cole o script fornecido.</p>
+        </div>`;
+    }
+  }
+
+  // ── DASHBOARD ───────────────────────────────────────────────────────────────
+  function renderDashboard() {
+    const pub = todosOsPosts.filter(p => p.publicado).length;
+    const rasc = todosOsPosts.filter(p => !p.publicado).length;
+    const cats = new Set(todosOsPosts.map(p => p.categoria)).size;
+
+    document.getElementById('stat-total').textContent   = todosOsPosts.length;
+    document.getElementById('stat-pub').textContent     = pub;
+    document.getElementById('stat-rascunho').textContent = rasc;
+    document.getElementById('stat-cats').textContent    = cats;
+
+    const recentes = todosOsPosts.slice(0, 5);
+    if (!recentes.length) {
+      document.getElementById('dash-recentes').innerHTML = `
+        <div class="empty-state">
+          <div class="icon">✍️</div>
+          <h3>Nenhum post ainda</h3>
+          <p>Clique em "+ Novo post" para começar a publicar no blog.</p>
+        </div>`;
+      return;
+    }
+    document.getElementById('dash-recentes').innerHTML = tabelaHTML(recentes);
+  }
+
+  // ── POSTS ───────────────────────────────────────────────────────────────────
+  function filtrarStatus(status, btn) {
+    filtroAtual = status;
+    document.querySelectorAll('.filtro-status').forEach(b => b.classList.remove('active', 'btn-primary'));
+    btn.classList.add('active');
+    renderPosts();
+  }
+
+  function renderPosts() {
+    const busca = (document.getElementById('busca-posts')?.value || '').toLowerCase();
+    let lista = todosOsPosts;
+    if (filtroAtual === 'publicado') lista = lista.filter(p => p.publicado);
+    if (filtroAtual === 'rascunho')  lista = lista.filter(p => !p.publicado);
+    if (busca) lista = lista.filter(p =>
+      p.titulo.toLowerCase().includes(busca) ||
+      (p.autor||'').toLowerCase().includes(busca) ||
+      (p.categoria||'').toLowerCase().includes(busca)
+    );
+
+    const el = document.getElementById('tabela-posts');
+    if (!el) return;
+    if (!lista.length) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>Nenhum resultado</h3></div>`;
+      return;
+    }
+    el.innerHTML = tabelaHTML(lista);
+  }
+
+  function tabelaHTML(posts) {
+    return `
+      <div class="posts-table-header">
+        <span>Título</span><span>Categoria</span><span>Autor</span><span>Status</span><span>Ações</span>
+      </div>
+      ${posts.map(p => `
+        <div class="post-row">
+          <div class="post-titulo">
+            ${p.emoji || '📝'} ${p.titulo}
+            <small>/${p.slug}</small>
+          </div>
+          <div class="post-cat">${p.categoria || '—'}</div>
+          <div class="post-autor">${p.autor || '—'}</div>
+          <div>
+            <span class="post-status ${p.publicado ? 'status-pub' : 'status-rascunho'}">
+              ${p.publicado ? '● Publicado' : '○ Rascunho'}
+            </span>
+          </div>
+          <div class="post-acoes">
+            <button class="btn btn-secondary btn-sm" onclick="editarPost('${p.id}')">✏️</button>
+            <button class="btn btn-sm ${p.publicado ? 'btn-secondary' : 'btn-success'}" onclick="toggleStatus('${p.id}', ${p.publicado})" title="${p.publicado ? 'Despublicar' : 'Publicar'}">${p.publicado ? '↙' : '🚀'}</button>
+            <button class="btn btn-danger btn-sm" onclick="deletarPost('${p.id}')">🗑</button>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  // ── EDITOR ──────────────────────────────────────────────────────────────────
+  let publicadoAtual = false;
+
+  function abrirEditor(post=null) {
+    document.getElementById('editor-id').value      = post?.id || '';
+    document.getElementById('editor-emoji').value   = post?.emoji || '📚';
+    document.getElementById('editor-titulo').value  = post?.titulo || '';
+    document.getElementById('editor-slug').value    = post?.slug || '';
+    document.getElementById('editor-resumo').value  = post?.resumo || '';
+    document.getElementById('editor-conteudo').value = post?.conteudo || '';
+    document.getElementById('editor-autor').value   = post?.autor || 'Equipe Viva Lyrio';
+    document.getElementById('editor-categoria').value = post?.categoria || 'Literatura Infantil';
+    document.getElementById('editor-titulo-header').textContent = post ? 'Editar post' : 'Novo post';
+
+    publicadoAtual = post?.publicado || false;
+    atualizarToggle();
+
+    document.getElementById('editor-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('editor-titulo').focus();
+  }
+
+  function fecharEditor() {
+    document.getElementById('editor-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function editarPost(id) {
+    const p = todosOsPosts.find(x => x.id === id);
+    if (p) abrirEditor(p);
+  }
+
+  function gerarSlug() {
+    const t = document.getElementById('editor-titulo').value;
+    if (!document.getElementById('editor-id').value) {
+      document.getElementById('editor-slug').value = t
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9\s-]/g,'')
+        .trim().replace(/\s+/g,'-');
+    }
+  }
+
+  function togglePublicado() {
+    publicadoAtual = !publicadoAtual;
+    atualizarToggle();
+  }
+
+  function atualizarToggle() {
+    const sw = document.getElementById('toggle-pub');
+    const lb = document.getElementById('toggle-pub-label');
+    sw.classList.toggle('on', publicadoAtual);
+    lb.textContent = publicadoAtual ? '✓ Publicado no blog' : 'Salvar como rascunho';
+  }
+
+  async function salvarPost() {
+    const id      = document.getElementById('editor-id').value;
+    const titulo  = document.getElementById('editor-titulo').value.trim();
+    const slug    = document.getElementById('editor-slug').value.trim();
+
+    if (!titulo) { toast('O título é obrigatório.', true); return; }
+    if (!slug)   { toast('O slug é obrigatório.', true); return; }
+
+    const payload = {
+      titulo,
+      slug,
+      resumo:     document.getElementById('editor-resumo').value.trim(),
+      conteudo:   document.getElementById('editor-conteudo').value.trim(),
+      autor:      document.getElementById('editor-autor').value.trim() || 'Equipe Viva Lyrio',
+      categoria:  document.getElementById('editor-categoria').value,
+      emoji:      document.getElementById('editor-emoji').value.trim() || '📚',
+      publicado:  publicadoAtual,
+      atualizado_em: new Date().toISOString(),
+    };
+
+    const btn = document.getElementById('btn-salvar');
+    btn.disabled = true;
+    btn.textContent = '⏳ Salvando...';
+
+    try {
+      if (id) {
+        await sbFetch(`/posts?id=eq.${id}`, 'PATCH', payload);
+        toast('Post atualizado! ✓');
+      } else {
+        await sbFetch('/posts', 'POST', payload);
+        toast('Post criado! 🚀');
+      }
+      fecharEditor();
+      await carregarDados();
+    } catch(e) {
+      toast('Erro: ' + e.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Salvar post';
+    }
+  }
+
+  async function toggleStatus(id, publicadoAgora) {
+    try {
+      await sbFetch(`/posts?id=eq.${id}`, 'PATCH', {
+        publicado: !publicadoAgora,
+        atualizado_em: new Date().toISOString()
+      });
+      toast(publicadoAgora ? 'Post despublicado.' : 'Post publicado! 🚀');
+      await carregarDados();
+    } catch(e) {
+      toast('Erro: ' + e.message, true);
+    }
+  }
+
+  async function deletarPost(id) {
+    if (!confirm('Tem certeza que deseja excluir este post? Essa ação não pode ser desfeita.')) return;
+    try {
+      await sbFetch(`/posts?id=eq.${id}`, 'DELETE');
+      toast('Post excluído.');
+      await carregarDados();
+    } catch(e) {
+      toast('Erro: ' + e.message, true);
+    }
+  }
+
+  // ── VIEWS ───────────────────────────────────────────────────────────────────
+  const views = ['dashboard', 'posts', 'novo'];
+  function setView(v) {
+    views.forEach(x => {
+      document.getElementById('view-' + x).classList.toggle('section-hidden', x !== v);
+    });
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    const titles = { dashboard: 'Dashboard', posts: 'Posts', novo: 'Novo post' };
+    document.getElementById('topbar-title').textContent = titles[v] || v;
+    if (v === 'novo') abrirEditor();
+  }
+
+  // ── TOAST ───────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function toast(msg, erro=false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'show' + (erro ? ' erro' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.className = '', 3000);
+  }
+
+  // Fechar editor clicando fora
+  document.getElementById('editor-overlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharEditor();
+  });
+
+  // ESC fecha editor
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') fecharEditor();
+  });
+    // ===== SISTEMA DE PEDIDOS =====
+  let ultimoPedidoId = null;
+  
+  function showToastPedido(mensagem) {
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.background = '#32BCAD'; // Tema verde da editora
+    toast.style.color = '#fff';
+    toast.style.padding = '15px 20px';
+    toast.style.borderRadius = '8px';
+    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    toast.style.zIndex = '9999';
+    toast.style.fontFamily = 'Inter, sans-serif';
+    toast.style.fontWeight = 'bold';
+    toast.innerHTML = '??? ' + mensagem;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.transition = 'opacity 0.5s';
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 500);
+    }, 5000);
+  }
+
+  async function verificarNovosPedidos() {
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/pedidos?order=criado_em.desc&limit=1', {
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.length > 0) {
+        const pedidoMaisRecente = data[0];
+        
+        // Se for a primeira vez rodando, apenas salva qual é o mais recente
+        if (ultimoPedidoId === null) {
+          ultimoPedidoId = pedidoMaisRecente.id;
+        } 
+        // Se mudou o ID, é um pedido novo!
+        else if (ultimoPedidoId !== pedidoMaisRecente.id) {
+          ultimoPedidoId = pedidoMaisRecente.id;
+          showToastPedido('Novo pedido! (R$ ' + pedidoMaisRecente.detalhes.total.toFixed(2).replace('.', ',') + ')');
+          
+          // Se a aba de pedidos estiver aberta, recarrega a tabela automaticamente
+          if (!document.getElementById('view-pedidos').classList.contains('section-hidden')) {
+            carregarPedidos();
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  async function carregarPedidos() {
+    const tbody = document.getElementById('tabela-pedidos-body');
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;"><div class="loading"><div class="spinner"></div> Carregando pedidos...</div></td></tr>';
+    
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/pedidos?order=criado_em.desc', {
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+      });
+      if (!res.ok) throw new Error('Falha ao carregar');
+      const data = await res.json();
+      
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">Nenhum pedido encontrado.</td></tr>';
+        return;
+      }
+      
+      let html = '';
+      data.forEach(p => {
+        const dataFormatada = new Date(p.criado_em).toLocaleString('pt-BR');
+        const total = 'R$ ' + (p.detalhes.total || 0).toFixed(2).replace('.', ',');
+        const c = p.detalhes.cliente || {};
+        let enderecoHtml = c.cep ? 'CEP: ' + c.cep : 'Não informado';
+        if (c.rua) {
+          enderecoHtml = `${c.rua}, ${c.numero}`;
+          if (c.complemento) enderecoHtml += ` - ${c.complemento}`;
+          enderecoHtml += `<br>${c.bairro} - ${c.cidade}/${c.uf}<br>CEP: ${c.cep}`;
+        }
+        
+        let resumoItens = '';
+        if (p.detalhes.itens && Array.isArray(p.detalhes.itens)) {
+           resumoItens = p.detalhes.itens.map(i => ${i.quantity}x ).join('<br>');
+        }
+        
+        let statusBadge = '';
+        if(p.status === 'pendente') statusBadge = '<span style="background:var(--terra);color:#fff;padding:4px 8px;border-radius:12px;font-size:11px;">Pendente</span>';
+        else statusBadge = <span style="background:var(--success);color:#fff;padding:4px 8px;border-radius:12px;font-size:11px;"></span>;
+        
+        html += 
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:12px 10px;vertical-align:top;">
+              <strong>#</strong><br>
+              <span style="font-size:11px;color:var(--muted);"></span>
+            </td>
+            <td style="padding:12px 10px;vertical-align:top;">CEP: </td>
+            <td style="padding:12px 10px;vertical-align:top;font-size:12px;line-height:1.4;"></td>
+            <td style="padding:12px 10px;vertical-align:top;font-weight:600;"></td>
+            <td style="padding:12px 10px;vertical-align:top;"></td>
+          </tr>
+        ;
+      });
+      tbody.innerHTML = html;
+      
+    } catch (e) {
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:red;">Erro ao carregar os pedidos.</td></tr>';
+    }
+  }
+
+  // Inicializa
+  verificarNovosPedidos();
+  setInterval(verificarNovosPedidos, 15000);
+  
+  // Ao carregar a tela de pedidos, renderiza
+  // Adiciona um observer simples no botao pra carregar na primeira vez
+  document.querySelector('.nav-item[onclick*="pedidos"]').addEventListener('click', carregarPedidos);
+
+  // =============================================
+</script>
+</body>
+</html>

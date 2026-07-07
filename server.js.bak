@@ -1,0 +1,38 @@
+const express = require('express');
+const cors = require('cors');
+const fetch = require('node-fetch');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const ACCESS_TOKEN = 'APP_USR-6446017048803963-062716-a26b48aa8dbec68667ff8b407afecf42-3502535372';
+
+app.post('/process_payment', async (req, res) => {
+  try {
+    const paymentData = req.body;
+    
+    // We append the buyer's email if it's missing in some fields but provided overall, usually Bricks handles it.
+    const response = await fetch('https://api.mercadopago.com/v1/payments', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+        'X-Idempotency-Key': Math.random().toString(36).substring(7),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paymentData)
+    });
+
+    const data = await response.json();
+    console.log('Payment Response:', data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Mercado Pago Backend running on http://localhost:${PORT}`);
+});
