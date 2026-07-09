@@ -1102,25 +1102,25 @@
         
         let resumoItens = '';
         if (p.detalhes.itens && Array.isArray(p.detalhes.itens)) {
-           resumoItens = p.detalhes.itens.map(i => ${i.quantity}x ).join('<br>');
+           resumoItens = p.detalhes.itens.map(i => `${i.quantity}x ${i.title}`).join('<br>');
         }
-        
+
         let statusBadge = '';
         if(p.status === 'pendente') statusBadge = '<span style="background:var(--terra);color:#fff;padding:4px 8px;border-radius:12px;font-size:11px;">Pendente</span>';
-        else statusBadge = <span style="background:var(--success);color:#fff;padding:4px 8px;border-radius:12px;font-size:11px;"></span>;
-        
-        html += 
+        else statusBadge = `<span style="background:var(--success);color:#fff;padding:4px 8px;border-radius:12px;font-size:11px;">${p.status}</span>`;
+
+        html += `
           <tr style="border-bottom:1px solid var(--border);">
             <td style="padding:12px 10px;vertical-align:top;">
-              <strong>#</strong><br>
-              <span style="font-size:11px;color:var(--muted);"></span>
+              <strong>#${p.id}</strong><br>
+              <span style="font-size:11px;color:var(--muted);">${dataFormatada}</span>
             </td>
-            <td style="padding:12px 10px;vertical-align:top;">CEP: </td>
-            <td style="padding:12px 10px;vertical-align:top;font-size:12px;line-height:1.4;"></td>
-            <td style="padding:12px 10px;vertical-align:top;font-weight:600;"></td>
-            <td style="padding:12px 10px;vertical-align:top;"></td>
+            <td style="padding:12px 10px;vertical-align:top;">${enderecoHtml}</td>
+            <td style="padding:12px 10px;vertical-align:top;font-size:12px;line-height:1.4;">${resumoItens}</td>
+            <td style="padding:12px 10px;vertical-align:top;font-weight:600;">${total}</td>
+            <td style="padding:12px 10px;vertical-align:top;">${statusBadge}</td>
           </tr>
-        ;
+        `;
       });
       tbody.innerHTML = html;
       
