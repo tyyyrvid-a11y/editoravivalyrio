@@ -14,7 +14,10 @@ module.exports = async function handler(req, res) {
 
   try {
     const paymentData = req.body;
-    const ACCESS_TOKEN = 'APP_USR-8377510758067884-062716-5c5521b4002b8d9dadfe0543e1f31c06-3476244815';
+    const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+    if (!ACCESS_TOKEN) {
+      return res.status(500).json({ error: 'MP_ACCESS_TOKEN não configurado nas variáveis de ambiente.' });
+    }
 
     const response = await fetch('https://api.mercadopago.com/v1/payments', {
       method: 'POST',

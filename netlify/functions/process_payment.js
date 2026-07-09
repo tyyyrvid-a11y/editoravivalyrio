@@ -17,8 +17,15 @@ exports.handler = async function(event, context) {
   
   try {
     const paymentData = JSON.parse(event.body);
-    const ACCESS_TOKEN = 'APP_USR-6446017048803963-062716-a26b48aa8dbec68667ff8b407afecf42-3502535372';
-    
+    const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+    if (!ACCESS_TOKEN) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'MP_ACCESS_TOKEN não configurado nas variáveis de ambiente.' })
+      };
+    }
+
     const response = await fetch('https://api.mercadopago.com/v1/payments', {
       method: 'POST',
       headers: {
