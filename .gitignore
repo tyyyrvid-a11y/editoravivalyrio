@@ -1,3 +1,6 @@
+# Painel de administracao (nao publicar: contem senha no client)
+admin.html
+
 # Local Netlify folder
 .netlify
 

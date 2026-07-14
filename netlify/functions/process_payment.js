@@ -38,21 +38,8 @@ exports.handler = async function(event, context) {
     
     let data = await response.json();
 
-    // ==========================================
-    // BYPASS DE TESTE (Para evitar o bloqueio do Mercado Pago enquanto a conta nǜo  aprovada)
-    // ==========================================
-    if (data.status === 401 && data.message && data.message.includes("live credentials")) {
-        console.log("Mercado Pago bloqueou. Gerando PIX Falso de Sucesso para testes...");
-        data = {
-            status: "pending",
-            point_of_interaction: {
-                transaction_data: {
-                    qr_code: "00020101021126360014br.gov.bcb.pix0114+5511999999999520400005303986540510.005802BR5915Editora Viva Lyrio6009Sao Paulo62070503***63041A2B"
-                }
-            }
-        };
-    }
-    // ==========================================
+    // O bypass de teste (PIX falso) foi removido para que erros reais do
+    // Mercado Pago sejam exibidos ao cliente — evita "falso sucesso" em produção.
 
     return {
       statusCode: 200,
