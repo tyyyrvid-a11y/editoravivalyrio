@@ -82,6 +82,7 @@ function doPost(e) {
     sheet.getRange(linha, 10).setDataValidation(regra);
 
     enviarEmail_(c, itensTexto, totalFmt, endereco, cidadeUf);
+    enviarEmailComprador_(c, itensTexto, totalFmt, endereco, cidadeUf, dados);
 
     return json_({ ok: true });
   } catch (err) {
@@ -117,6 +118,74 @@ function enviarEmail_(c, itensTexto, totalFmt, endereco, cidadeUf) {
     subject: 'Novo pedido — Editora Viva Lyrio (' + totalFmt + ')',
     body: corpo
   });
+}
+
+// ----------------------------------------------------------------------------
+//  E-mail de CONFIRMAÇÃO enviado ao COMPRADOR (cliente)
+// ----------------------------------------------------------------------------
+//  Usa o e-mail informado no cadastro do pedido (c.email). Se não houver
+//  e-mail válido, apenas ignora (não quebra o registro do pedido).
+function enviarEmailComprador_(c, itensTexto, totalFmt, endereco, cidadeUf, dados) {
+  var email = (c.email || '').trim();
+  if (!email || email.indexOf('@') === -1) return;
+
+  var nome = (c.nome || '').split(' ')[0] || 'tudo bem';
+  var entrega = (dados && dados.entrega) || 'Entrega pelos Correios';
+  var retirada = entrega.indexOf('Retirada') === 0;
+
+  var blocoEntrega = retirada
+    ? 'Forma de recebimento: Retirada no espaço físico\n'
+    : 'Forma de recebimento: ' + entrega + '\n' +
+      'Endereço de entrega:\n' + endereco + '\n' + cidadeUf + '\nCEP: ' + (c.cep || '') + '\n';
+
+  var corpo =
+    'Olá, ' + nome + '!\n\n' +
+    'Recebemos o seu pedido na Editora Viva Lyrio. Obrigado pela compra! 🌿\n\n' +
+    'Resumo do pedido\n' +
+    '----------------------------------------\n' +
+    'Itens: ' + itensTexto + '\n' +
+    'Total: ' + totalFmt + '\n\n' +
+    blocoEntrega + '\n' +
+    'Assim que o seu pedido for despachado, avisaremos por aqui.\n' +
+    'Qualquer dúvida, é só responder este e-mail.\n\n' +
+    'Um abraço,\n' +
+    'Editora Viva Lyrio';
+
+  var htmlBloco = retirada
+    ? '<p><strong>Forma de recebimento:</strong> Retirada no espaço físico</p>'
+    : '<p><strong>Forma de recebimento:</strong> ' + entrega + '<br>' +
+      '<strong>Endereço de entrega:</strong><br>' +
+      escapeHtml_(endereco) + '<br>' + escapeHtml_(cidadeUf) +
+      '<br>CEP: ' + escapeHtml_(c.cep || '') + '</p>';
+
+  var html =
+    '<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2d1f;max-width:560px;margin:0 auto">' +
+      '<h2 style="color:#2f6b3a;margin:0 0 4px">Pedido confirmado 🌿</h2>' +
+      '<p>Olá, <strong>' + escapeHtml_(nome) + '</strong>! Recebemos o seu pedido na ' +
+        '<strong>Editora Viva Lyrio</strong>. Obrigado pela compra!</p>' +
+      '<div style="background:#F5F7F5;border:1px solid #E2E8E2;border-radius:12px;padding:16px;margin:16px 0">' +
+        '<p style="margin:0 0 8px"><strong>Itens:</strong> ' + escapeHtml_(itensTexto) + '</p>' +
+        '<p style="margin:0"><strong>Total:</strong> ' + escapeHtml_(totalFmt) + '</p>' +
+      '</div>' +
+      htmlBloco +
+      '<p>Assim que o seu pedido for despachado, avisaremos por aqui. ' +
+        'Qualquer dúvida, é só responder este e-mail.</p>' +
+      '<p style="margin-top:24px">Um abraço,<br><strong>Editora Viva Lyrio</strong></p>' +
+    '</div>';
+
+  MailApp.sendEmail({
+    to: email,
+    subject: 'Pedido confirmado — Editora Viva Lyrio (' + totalFmt + ')',
+    body: corpo,
+    htmlBody: html,
+    name: 'Editora Viva Lyrio'
+  });
+}
+
+function escapeHtml_(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function json_(obj) {
